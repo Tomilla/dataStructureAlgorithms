@@ -23,9 +23,9 @@ void inputNum(PNL nodeList) {
             }
             temp->value = strtol(str, 0, 0);
             temp->next = NULL;
+            if (strcmp(str, "q") != 0 && strcmp(str, "Q") != 0 && curLen < maxLen) {
             nodeList->next = temp;
             nodeList = nodeList->next;
-        if (strcmp(str, "q") != 0 && strcmp(str, "Q") != 0 && curLen < maxLen) {
             ++curLen;
         }
         else {
@@ -41,9 +41,9 @@ void sortList(PNL node) {
     PNL nextP = node;
     PNL startP = node->next;
 
-    while (startP != NULL) {
-        nextP = startP->next;
-        while (nextP != NULL) {
+    while (startP != 0x0) {
+        nextP = node->next;
+        while (nextP != 0x0) {
             if (startP->value > nextP->value) {
                 long temp = startP->value;
                 startP->value = nextP->value;
