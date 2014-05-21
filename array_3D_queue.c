@@ -42,31 +42,36 @@ int leaveQueue(_3dQueue *p_queue, innerElem **p_elem);
 // apply {function} `*func` for each inner element
 void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem));
 
-// *TEST* add a example of callback{function} for `QUEUE` traverse method
+// *TEST* add a example of callback{function} for `QUEUE` traverse \
+// method
 void printElem(innerElem *p_elem);
+/*void incrElemValue(innerElem p_elm[]);*/
 
 int main(void) {
-  innerElem elem_set_1 = {07, 17, 27};
-  innerElem elem_set_2 = {27, 37, 47};
-  innerElem elem_set_3 = {47, 57, 67};
-  innerElem elem_set_4 = {67, 77, 87};
-  innerElem elem_set_5 = {87, 97, 07};
+  innerElem elem_set_0 = {07, 17, 27};
+  innerElem elem_set_1 = {27, 37, 47};
+  innerElem elem_set_2 = {47, 57, 67};
+  innerElem elem_set_3 = {67, 77, 87};
+  innerElem elem_set_4 = {87, 97, 07};
 
+  innerElem elem_set_5 = {7, 7, 7};
+  innerElem elem_set_6 = {77, 77, 77};
+  innerElem elem_set_7 = {777, 777, 777};
+  innerElem elem_set_8 = {7777, 7777, 7777};
+  innerElem elem_set_9 = {77777, 77777, 77777};
   // *TEST* {function} create `QUEUE`
   _3dQueue *p_queue_new = createQueue(3);
 
   // *TEST* {function} enter QUEUE
+  enterQueue(p_queue_new, &elem_set_0);
   enterQueue(p_queue_new, &elem_set_1);
   enterQueue(p_queue_new, &elem_set_2);
-  enterQueue(p_queue_new, &elem_set_3);
-  enterQueue(p_queue_new, &elem_set_4);
-  enterQueue(p_queue_new, &elem_set_5);
-
+  printf("\n*TEST* printf all element:\n");
   // *TEST* {function) traverse `QUEUE`
   traverseQueue(p_queue_new, printElem);
 
   // *TEST* {function} isEmpty && queueSize && queueLength
-  printf("\n\n*****************************************************");
+  printf("\n*********************************************************");
   if (isEmpty(p_queue_new) != TRUE) {
     printf("\nthe current length of this `QUEUE`:\n>%d"
         , queueSize(p_queue_new));
@@ -76,7 +81,7 @@ int main(void) {
 
   // *TEST* {function} leave `QUEUE`
   printf("\n\12******************************************************");
-  printf("\n*TEST*printf all element:");
+  printf("\n*TEST* printf all element:");
   innerElem *p_temp;
 
   while (leaveQueue(p_queue_new, &p_temp) != -1) {
@@ -89,31 +94,42 @@ int main(void) {
   // *TEST* {function} clear `QUEUE`
   printf("\n\12******************************************************");
   printf("\nNow continue enter two element to this `QUEUE`\n");
-  enterQueue(p_queue_new, &elem_set_1);
-  enterQueue(p_queue_new, &elem_set_2);
+  enterQueue(p_queue_new, &elem_set_3);
+  enterQueue(p_queue_new, &elem_set_4);
 
   traverseQueue(p_queue_new, printElem);
   printf("\nclear all element in this `QUEUE`, loading...");
 
   clearQueue(p_queue_new);
   printf("\nthe total containment of this `QUEUE`:\n%d"
-      , queueLength(p_queue_new));
+      , queueSize(p_queue_new));
   printf("\nthe current length of this `QUEUE`:\n%d"
       , queueLength(p_queue_new));
 
   // *TEST* {function} queueHead
-  printf("\nNow continue enter three element to this `QUEUE`\n");
+  printf("\nNow continue enter ten element to this `QUEUE`\n");
+
+  enterQueue(p_queue_new, &elem_set_0);
+  enterQueue(p_queue_new, &elem_set_1);
+  enterQueue(p_queue_new, &elem_set_2);
   enterQueue(p_queue_new, &elem_set_3);
   enterQueue(p_queue_new, &elem_set_4);
   enterQueue(p_queue_new, &elem_set_5);
+  enterQueue(p_queue_new, &elem_set_6);
+  enterQueue(p_queue_new, &elem_set_7);
+  enterQueue(p_queue_new, &elem_set_8);
+  enterQueue(p_queue_new, &elem_set_9);
 
+  // traverse all element of `Queue`, meanwhile increse each items by 10
+  /*traverseQueue(p_queue_new, incrElemValue);*/
+  // after incresing
   traverseQueue(p_queue_new, printElem);
   queueHead(p_queue_new, &p_temp);
 
   printf("\nfetch the Head element of `QUEUE`:\n(%d,%d,%d)"
       , p_temp->x, p_temp->y, p_temp->z);
   printf("\nthe total containment of this `QUEUE`:\n%d"
-      , queueLength(p_queue_new));
+      , queueSize(p_queue_new));
   printf("\nthe current length of this `QUEUE`:\n%d\n"
       , queueLength(p_queue_new));
 
@@ -304,6 +320,22 @@ void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem)) {
  *
  */
 
-void printElem(innerElem *p_elem) {
-  printf("(%d,%d,%d)\t", p_elem->x, p_elem->y, p_elem->z);
+void printElem(innerElem p_elem[]) {
+  printf("(%d,%d,%d)", p_elem->x, p_elem->y, p_elem->z);
+  printf("\n");
 }
+
+/**
+ * # Second callback{function} use for traverse `QUEUE`,
+ *   increse inner elemment value
+ *
+ * @param `p_elem` a {pointer} that point to the addess of element,
+ *          which element is wait to handle
+ */
+/*
+void incrElemValue(innerElem p_elem[]) {
+  (*p_elem).x += 1;
+  (*p_elem).y += 1;
+  (*p_elem).z += 1;
+}
+*/
