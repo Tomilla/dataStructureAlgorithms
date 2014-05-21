@@ -1,8 +1,8 @@
 /**
  *  #brief: a simple implement of Three-Dimensional Single-Channel Queue
+ *
  *  #author Muwaii_Cz
  *  #date 2014_05_18
- *
  */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@ typedef struct sigleChannel {
   int size;         // the current containment of `QUEUE`
 }_3dQueue;
 
-// write proper description method of `QUEUE`
+////write proper description method of `QUEUE`////
 
 // create a `QUEUE` that initialize length is `i_length`
 _3dQueue* createQueue(int i_length);
@@ -45,7 +45,7 @@ void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem));
 // *TEST* add a example of callback{function} for `QUEUE` traverse \
 // method
 void printElem(innerElem *p_elem);
-void incrElemValue(innerElem p_elm[]);
+void incrElemValue(innerElem p_elem[]);
 
 int main(void) {
   innerElem elem_set_0 = {07, 17, 27};
@@ -59,6 +59,7 @@ int main(void) {
   innerElem elem_set_7 = {777, 777, 777};
   innerElem elem_set_8 = {7777, 7777, 7777};
   innerElem elem_set_9 = {77777, 77777, 77777};
+
   // *TEST* {function} create `QUEUE`
   _3dQueue *p_queue_new = createQueue(3);
 
@@ -67,6 +68,7 @@ int main(void) {
   enterQueue(p_queue_new, &elem_set_1);
   enterQueue(p_queue_new, &elem_set_2);
   printf("\n*TEST* printf all element:\n");
+
   // *TEST* {function) traverse `QUEUE`
   traverseQueue(p_queue_new, printElem);
 
@@ -86,9 +88,9 @@ int main(void) {
 
   while (leaveQueue(p_queue_new, &p_temp) != -1) {
     printf("\ncurrent element of leave `QUEUE`:\n(%d,%d,%d)"
-        , p_temp->x, p_temp->y, p_temp->z);
+      , p_temp->x, p_temp->y, p_temp->z);
     printf("\ncurrent length of this `QUEUE`:\n%d"
-        , queueLength(p_queue_new));
+      , queueLength(p_queue_new));
   }
 
   // *TEST* {function} clear `QUEUE`
@@ -102,9 +104,9 @@ int main(void) {
 
   clearQueue(p_queue_new);
   printf("\nthe total containment of this `QUEUE`:\n%d"
-      , queueSize(p_queue_new));
+    , queueSize(p_queue_new));
   printf("\nthe current length of this `QUEUE`:\n%d"
-      , queueLength(p_queue_new));
+    , queueLength(p_queue_new));
 
   // *TEST* {function} queueHead
   printf("\nNow continue enter ten element to this `QUEUE`\n");
@@ -127,11 +129,11 @@ int main(void) {
   queueHead(p_queue_new, &p_temp);
 
   printf("\nfetch the Head element of `QUEUE`:\n(%d,%d,%d)"
-      , p_temp->x, p_temp->y, p_temp->z);
+    , p_temp->x, p_temp->y, p_temp->z);
   printf("\nthe total containment of this `QUEUE`:\n%d"
-      , queueSize(p_queue_new));
+    , queueSize(p_queue_new));
   printf("\nthe current length of this `QUEUE`:\n%d\n"
-      , queueLength(p_queue_new));
+    , queueLength(p_queue_new));
 
   // *TEST* {function} destory `QUEUE`
   destoryQueue(p_queue_new);
@@ -208,7 +210,6 @@ int queueSize(_3dQueue *p_queue) {
   return p_queue->size;
 }
 
-
 /**
  * # Check `QUEUE` is empty or not
  *
@@ -250,7 +251,6 @@ int queueHead(_3dQueue *p_queue, innerElem **p_elem) {
  * @param `p_elem` a pointer that point to the address of element,
  *        which element is wait processor insert
  * @return new length of `QUEUE`, after successful insert new element
- *
  */
 
 int enterQueue(_3dQueue *p_queue, innerElem *p_elem) {
@@ -258,13 +258,15 @@ int enterQueue(_3dQueue *p_queue, innerElem *p_elem) {
   if (p_queue->length == p_queue->size) {
     // by default, the realloc capacity is twice the origin
     p_queue->rear = realloc(p_queue->rear
-        , 2 * p_queue->size * sizeof(innerElem *));
+      , 2 * p_queue->size * sizeof(innerElem *));
     p_queue->size *= 2;
   }
+
   int idx = 0;
   for (idx = p_queue->length; idx > 0; idx--) {
     p_queue->rear[idx] = p_queue->rear[idx - 1];
   }
+
   p_queue->rear[0] = p_elem;
   p_queue->front = p_queue->rear[p_queue->length];
 
@@ -288,6 +290,7 @@ int leaveQueue(_3dQueue *p_queue, innerElem **p_elem) {
       *p_elem = NULL;
       return FALSE;
   }
+
   *p_elem = p_queue->front;
   p_queue->length--; // decreasing
   p_queue->front = p_queue->rear[p_queue->length - 1];
@@ -307,9 +310,12 @@ int leaveQueue(_3dQueue *p_queue, innerElem **p_elem) {
 
 void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem)) {
   int idx = 0;
-//  for (idx = --p_queue->length; idx >= 0; idx--) { //*//
-//    func(p_queue->rear[idx]);
-//  }
+  //`QUEUE` front to `QUEUE` rear
+  /*
+  for (idx = --p_queue->length; idx >= 0; idx--) {
+    func(p_queue->rear[idx]);
+  }
+  */
   // `QUEUE` rear to `QUEUE` front
   for (idx = 0; idx < p_queue->length; ++idx) {
     func(p_queue->rear[idx]);
@@ -321,7 +327,6 @@ void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem)) {
  *
  * @param `p_elem` a {pointer} that point to the addess of element,
  *        which element is wait to handle
- *
  */
 
 void printElem(innerElem *p_elem) {
@@ -334,7 +339,7 @@ void printElem(innerElem *p_elem) {
  *   increse inner elemment value
  *
  * @param `p_elem` a {pointer} that point to the addess of element,
- *          which element is wait to handle
+ *        which element is wait to handle
  */
 
 void incrElemValue(innerElem p_elem[]) {
@@ -342,4 +347,3 @@ void incrElemValue(innerElem p_elem[]) {
   (*p_elem).y += 1;
   (*p_elem).z += 1;
 }
-
