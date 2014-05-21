@@ -45,7 +45,7 @@ void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem));
 // *TEST* add a example of callback{function} for `QUEUE` traverse \
 // method
 void printElem(innerElem *p_elem);
-/*void incrElemValue(innerElem p_elm[]);*/
+void incrElemValue(innerElem p_elm[]);
 
 int main(void) {
   innerElem elem_set_0 = {07, 17, 27};
@@ -121,7 +121,7 @@ int main(void) {
   enterQueue(p_queue_new, &elem_set_9);
 
   // traverse all element of `Queue`, meanwhile increse each items by 10
-  /*traverseQueue(p_queue_new, incrElemValue);*/
+  traverseQueue(p_queue_new, incrElemValue);
   // after incresing
   traverseQueue(p_queue_new, printElem);
   queueHead(p_queue_new, &p_temp);
@@ -307,7 +307,11 @@ int leaveQueue(_3dQueue *p_queue, innerElem **p_elem) {
 
 void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem)) {
   int idx = 0;
-  for (idx = 0; idx < p_queue->length; ++idx) { //*//
+//  for (idx = --p_queue->length; idx >= 0; idx--) { //*//
+//    func(p_queue->rear[idx]);
+//  }
+  // `QUEUE` rear to `QUEUE` front
+  for (idx = 0; idx < p_queue->length; ++idx) {
     func(p_queue->rear[idx]);
   }
 }
@@ -320,8 +324,8 @@ void traverseQueue(_3dQueue *p_queue, void(*func)(innerElem *p_elem)) {
  *
  */
 
-void printElem(innerElem p_elem[]) {
-  printf("(%d,%d,%d)", p_elem->x, p_elem->y, p_elem->z);
+void printElem(innerElem *p_elem) {
+  printf("(%d,%d,%d)", (*p_elem).x, p_elem->y, p_elem->z);
   printf("\n");
 }
 
@@ -332,10 +336,10 @@ void printElem(innerElem p_elem[]) {
  * @param `p_elem` a {pointer} that point to the addess of element,
  *          which element is wait to handle
  */
-/*
+
 void incrElemValue(innerElem p_elem[]) {
   (*p_elem).x += 1;
   (*p_elem).y += 1;
   (*p_elem).z += 1;
 }
-*/
+
