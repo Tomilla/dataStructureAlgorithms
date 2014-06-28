@@ -14,14 +14,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAXSIZE 77
+#define MAXITEM 77
+//enum { ASC = "ascending", DES = "descending"};
 
 /* index of internal part loop, index of external part loop */
 static int idx_inn, idx_ext, i_temp, i_total_elem;
 /* string array use for store user input data */
-static char s_user_input[MAXSIZE];
+static char s_user_input[MAXITEM];
 /* buffer array for disorder elements */
-static long l_arr_buf[MAXSIZE];
+static long l_arr_buf[MAXITEM];
 
 void input_prompt(char *order)
 {
@@ -89,32 +90,56 @@ void execute_sort(void (*sort_func)(), char *order) {
         output_prompt(order);
 }
 
-void user_guide(void)
+char interactive_select_mode(void)
 {
+
         char s_user_guide[] =
-                "\12Please choose algorithm order mode\12\
-                 A\11-->\11ascending\12\
-                 B\11-->\11descending\12"
+                "\12Please choose algorithm order mode\
+                 \n0)\11-->\11ascending\12\
+                 \n1)\11-->\11descending\12"
         ;
         printf("%s", s_user_guide);
         scanf("%s", s_user_input);
+        return (char) s_user_input[0];
+}
+
+void interactive_select_scheme(void)
+{
+        char s_feature_info[] =
+                "\12what sorting scheme you want to use?\
+                 \12A)\11-->\11insertion sort algorithm.\
+                 \12"
+                ;
+        printf("%s", s_feature_info);
+        scanf("%s", s_user_input);
 
         /* occurred implicit conversion */
-        char prev_select = s_user_input[0];
+        char select_mode, select_scheme = s_user_input[0];
 
-        if (prev_select == 'A')
-                execute_sort(insertion_sort, "ascending");
-        else if (prev_select  == 'B')
-                execute_sort(insertion_sort, "descending");
-        else {
-                printf("ERROR: illegal option, please retry.. :p\12");
-                user_guide();
+        switch (select_scheme) {
+                case 'a':
+                case 'A':
+                        select_mode = interactive_select_mode();
+                        if (select_mode == '0')
+                                execute_sort(insertion_sort, "ascending");
+                        else if (select_mode  == '1')
+                                execute_sort(insertion_sort, "descending");
+                        else {
+                                printf("ERROR: illegal option, please retry.. :p\12");
+                                interactive_select_scheme();
+                        }
+                        break;
+                default:
+                        printf("ERROR: illegal option, please retry.. :D");
+                        interactive_select_scheme();
+                        break;
         }
+
 }
 
 int main(int argc, char **argv)
 {
-        user_guide();
+        interactive_select_scheme();
 
         putchar('\12');
         getchar();
