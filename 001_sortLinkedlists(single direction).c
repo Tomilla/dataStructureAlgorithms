@@ -15,17 +15,18 @@ void inputNum(PNL nodeList) {
     printf("please input %d integeral number Or press 'q/Q' key to quit Command-Line-Interface..\n", maxLen);
 
     while (1) {
-            printf("NO.%-2d integeral number:", curLen);
-            scanf("%s", str);
-            PNL temp = (PNL)malloc(sizeof(NL));
-            if (temp == NULL) {
-                return;
-            }
-            temp->value = strtol(str, 0, 0);
-            temp->next = NULL;
-            if (strcmp(str, "q") != 0 && strcmp(str, "Q") != 0 && curLen < maxLen) {
-            nodeList->next = temp;
-            nodeList = nodeList->next;
+        printf("NO.%-2d integeral number:", curLen);
+        scanf("%s", str);
+        PNL temp = (PNL)malloc(sizeof(NL));
+        if (temp == NULL) {
+            return;
+        }
+        temp->value = strtol(str, 0, 0);
+        temp->next = NULL;
+        nodeList->next = temp;
+        nodeList = nodeList->next;
+        if (strcmp(str, "q") != 0 && strcmp(str, "Q") != 0
+                && curLen < maxLen) {
             ++curLen;
         }
         else {
