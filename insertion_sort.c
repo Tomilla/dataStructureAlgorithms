@@ -18,19 +18,38 @@
 
 /* index of internal part loop, index of external part loop */
 static int idx_inn, idx_ext, i_temp, i_total_elem;
-/* buffer array ofr disorder elements */
+/* string array use for store user input data */
+static char s_user_input[MAXSIZE];
+/* buffer array for disorder elements */
 static long l_arr_buf[MAXSIZE];
 
 void input_prompt(char *order)
 {
-        printf("\12Evalute %s order ...\12", order);
-        printf("Please input elements:\12");
+        printf("\12Evaluate %s order...\12", order);
+        printf("Please input total elements:\12");
         scanf("%d", &i_total_elem);
 
-        printf("Please input %d elements..\12", i_total_elem);
+        printf("Please enter %d element%s Or press 'q/Q' key"
+               "to leave Command-Line-Interface.. :)\12"
+               , i_total_elem, (i_total_elem > 1) ? "s" : "");
 
-        for (idx_ext = 0; idx_ext < i_total_elem; idx_ext++) {
-                scanf("%ld", &l_arr_buf[idx_ext]);
+        idx_ext = 0;
+
+        while (1) {
+                printf("No.%-2d integral element: ", idx_ext + 1);
+                scanf("%s", s_user_input);
+
+                if (strcmp(s_user_input, "q") == 0
+                    || strcmp(s_user_input, "Q") == 0) {
+                        i_total_elem--;
+                        break;
+                }
+
+                l_arr_buf[idx_ext] = strtol(s_user_input, 0, 0);
+
+                if ((idx_ext + 1) >= i_total_elem) return;
+
+                idx_ext++;
         }
 }
 
@@ -49,16 +68,14 @@ void insertion_sort_desc(void)
 {
         input_prompt("descending");
 
-        idx_ext = 1;
-        while (idx_ext < i_total_elem) {
+        for (idx_ext = 1; idx_ext < i_total_elem; idx_ext += 1) {
                 idx_inn = idx_ext - 1;
                 i_temp = l_arr_buf[idx_ext];
-                while (i_temp > l_arr_buf[idx_inn] && idx_inn >= 0) {
-                        l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
-                        idx_inn -= 1;
+                for ( ; i_temp > l_arr_buf[idx_inn] && idx_inn >= 0;
+                     idx_inn--) {
+                     l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
                 }
                 l_arr_buf[idx_inn + 1] = i_temp;
-                idx_ext += 1;
         }
 
         output_prompt("descending");
