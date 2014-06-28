@@ -57,21 +57,27 @@ void output_prompt(char *order)
 {
         printf("\12Array elements sorting in %s order:\12", order);
 
-        for (idx_ext = 0; idx_ext < i_total_elem; idx_ext++)
-                printf("%ld ", l_arr_buf[idx_ext]);
+        if (strcmp(order, "ascending") == 0)
+                for (idx_ext = 0; idx_ext < i_total_elem; idx_ext++)
+                        printf("%ld ", l_arr_buf[idx_ext]);
+        else {
+                idx_ext = i_total_elem - 1;
+                for ( ; idx_ext >= 0; idx_ext--)
+                        printf("%ld ", l_arr_buf[idx_ext]);
+        }
 
         putchar('\12');
         getchar();
 }
 
-void insertion_sort_desc(void)
+void insertion_sort(void)
 {
         for (idx_ext = 1; idx_ext < i_total_elem; idx_ext += 1) {
-                idx_inn = idx_ext - 1;
-                i_temp = l_arr_buf[idx_ext];
-                for ( ; i_temp > l_arr_buf[idx_inn] && idx_inn >= 0;
+                idx_inn = idx_ext - 1;          /* previous element*/
+                i_temp = l_arr_buf[idx_ext];    /* current element*/
+                for ( ; i_temp < l_arr_buf[idx_inn] && idx_inn >= 0;
                      idx_inn--) {
-                     l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
+                        l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
                 }
                 l_arr_buf[idx_inn + 1] = i_temp;
         }
@@ -83,9 +89,32 @@ void execute_sort(void (*sort_func)(), char *order) {
         output_prompt(order);
 }
 
+void user_guide(void)
+{
+        char s_user_guide[] =
+                "\12Please choose algorithm order mode\12\
+                 A\11-->\11ascending\12\
+                 B\11-->\11descending\12"
+        ;
+        printf("%s", s_user_guide);
+        scanf("%s", s_user_input);
+
+        /* occurred implicit conversion */
+        char prev_select = s_user_input[0];
+
+        if (prev_select == 'A')
+                execute_sort(insertion_sort, "ascending");
+        else if (prev_select  == 'B')
+                execute_sort(insertion_sort, "descending");
+        else {
+                printf("ERROR: illegal option, please retry.. :p\12");
+                user_guide();
+        }
+}
+
 int main(int argc, char **argv)
 {
-        execute_sort(insertion_sort_desc, "descending");
+        user_guide();
 
         putchar('\12');
         getchar();
