@@ -29,7 +29,7 @@ void input_prompt(char *order)
         printf("Please input total elements:\12");
         scanf("%d", &i_total_elem);
 
-        printf("Please enter %d element%s Or press 'q/Q' key"
+        printf("\12Please enter %d element%s Or press 'q/Q' key"
                "to leave Command-Line-Interface.. :)\12"
                , i_total_elem, (i_total_elem > 1) ? "s" : "");
 
@@ -55,7 +55,7 @@ void input_prompt(char *order)
 
 void output_prompt(char *order)
 {
-        printf("Array elements sorting in %s order:\12", order);
+        printf("\12Array elements sorting in %s order:\12", order);
 
         for (idx_ext = 0; idx_ext < i_total_elem; idx_ext++)
                 printf("%ld ", l_arr_buf[idx_ext]);
@@ -66,8 +66,6 @@ void output_prompt(char *order)
 
 void insertion_sort_desc(void)
 {
-        input_prompt("descending");
-
         for (idx_ext = 1; idx_ext < i_total_elem; idx_ext += 1) {
                 idx_inn = idx_ext - 1;
                 i_temp = l_arr_buf[idx_ext];
@@ -77,13 +75,17 @@ void insertion_sort_desc(void)
                 }
                 l_arr_buf[idx_inn + 1] = i_temp;
         }
+}
 
-        output_prompt("descending");
+void execute_sort(void (*sort_func)(), char *order) {
+        input_prompt(order);
+        sort_func();
+        output_prompt(order);
 }
 
 int main(int argc, char **argv)
 {
-        insertion_sort_desc();
+        execute_sort(insertion_sort_desc, "descending");
 
         putchar('\12');
         getchar();
