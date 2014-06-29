@@ -95,7 +95,7 @@ char interactive_select_mode(void)
 
         char s_user_guide[] =
                 "\12Please choose algorithm order mode\
-                 \n0)\11-->\11ascending\12\
+                 \n0)\11-->\11ascending\
                  \n1)\11-->\11descending\12"
         ;
         printf("%s", s_user_guide);
@@ -120,13 +120,22 @@ void interactive_select_scheme(void)
                 case 'a':
                 case 'A':
                         select_mode = interactive_select_mode();
-                        if (select_mode == '0')
-                                execute_sort(insertion_sort, "ascending");
-                        else if (select_mode  == '1')
-                                execute_sort(insertion_sort, "descending");
-                        else {
-                                printf("ERROR: illegal option, please retry.. :p\12");
-                                interactive_select_scheme();
+                        while (48 <= select_mode <= 50) {
+                                if (select_mode == '0') {
+                                        execute_sort(insertion_sort
+                                                     , "ascending");
+                                        break;
+                                } else if (select_mode  == '1') {
+                                        execute_sort(insertion_sort
+                                                     , "descending");
+                                        break;
+                                } else {
+                                        printf("ERROR: illegal option"
+                                               ", please retry.. :p\12");
+                                        select_mode =
+                                                interactive_select_mode();
+                                        continue;
+                                }
                         }
                         break;
                 default:
