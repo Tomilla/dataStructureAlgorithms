@@ -114,7 +114,7 @@ void bin_ins_sort(void)
                 /* Using binary search algorithm find the position where
                  * routines ready insert.
                  * Note: binary-search must working on increasing order
-                 * sequence(array) */
+                 * sequences(array) */
                 int ins_pos = bin_search();
                 for (idx_inn = idx_ext; l_arr_buf[idx_inn - 1] > i_temp
                      && idx_inn > ins_pos; idx_inn--) {
@@ -123,6 +123,40 @@ void bin_ins_sort(void)
                 }
                 l_arr_buf[ins_pos] = i_temp;
         }
+}
+
+/**
+ * "I know how it works, however, I don't want to tell you!" 233..
+ *
+ * This method starts by sorting elements far apart form each other and
+ *   progressively reducing the gap between them.
+ * Starting with far apart elements can move some out-of-place elements
+ *   into position faster than a simple nearest neighbor exchange.
+ */
+
+void shell_sort(void)
+{
+        /* performs an insertion sort on elements of array l_arr_buf[]
+         *   with the given gap.
+         * Shell sort using Shell's (original) gap sequences:
+         *   n/2, n/4, ... , 1.
+         *   if gap == 1, performs an ordinary insertion sort */
+        int gap = i_total_elem / 2;
+        /* loop over gap */
+        for (; gap > 0; gap /= 2) {
+                /* do the insertion sort */
+                for (idx_ext = gap; idx_ext < i_total_elem; idx_ext++) {
+                        i_temp = l_arr_buf[idx_ext];
+                        idx_inn = idx_ext - gap;
+                        for (; l_arr_buf[idx_inn] > i_temp
+                             && idx_inn >= 0; idx_inn -= gap) {
+                                l_arr_buf[idx_inn + gap]
+                                  = l_arr_buf[idx_inn];
+                        }
+                        l_arr_buf[idx_inn + gap] = i_temp;
+                }
+        }
+
 }
 
 void execute_sort(void (*sort_func)(), char *order) {
@@ -148,8 +182,9 @@ void interactive_select_scheme(void)
 {
         char s_feature_info[] =
                 "\12what sorting scheme you want to use?\
-                 \12A)\11-->\11insertion sort algorithm.\
-                 \12B)\11-->\11binary insertion sort algorithm.\
+                 \12A)\11-->\11Direct insertion sort algorithm.\
+                 \12B)\11-->\11Binary search insertion sort algorithm.\
+                 \12C)\11-->\11Donald shell  insertion sort algorithm.\
                  \12";
         printf("%s", s_feature_info);
         scanf("%s", s_user_input);
@@ -190,6 +225,27 @@ void interactive_select_scheme(void)
                                         break;
                                 } else if (select_mode  == '1') {
                                         execute_sort(bin_ins_sort
+                                                     , DES);
+                                        break;
+                                } else {
+                                        printf("ERROR: illegal option,"
+                                               " please retry.. :p\12");
+                                        select_mode
+                                          = interactive_select_mode();
+                                        continue;
+                                }
+                        }
+                        break;
+                case 'c':
+                case 'C':
+                        select_mode = interactive_select_mode();
+                        while ( 48<= select_mode < 50) {
+                                if (select_mode == '0') {
+                                        execute_sort(shell_sort
+                                                     , ASC);
+                                        break;
+                                } else if (select_mode  == '1') {
+                                        execute_sort(shell_sort
                                                      , DES);
                                         break;
                                 } else {
