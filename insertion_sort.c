@@ -15,7 +15,8 @@
 #include <stdlib.h>
 
 #define MAXITEM 77
-//enum { ASC = "ascending", DES = "descending"};
+#define ASC "ascending"
+#define DES "descending"
 
 /* index of internal part loop, index of external part loop */
 static int idx_inn, idx_ext, i_temp, i_total_elem;
@@ -37,7 +38,11 @@ void input_prompt(char *order)
         idx_ext = 0;
 
         while (1) {
-                printf("No.%-2d integral element: ", idx_ext + 1);
+                i_temp = (idx_ext + 1) % 100;
+                printf("%d%s integral element: ", idx_ext + 1
+                       , i_temp < 10 ? i_temp == 3 ? "rd" : i_temp == 2
+                       ? "nd" : i_temp == 1 ? "st" : "th"
+                       : "th");
                 scanf("%s", s_user_input);
 
                 if (strcmp(s_user_input, "q") == 0
@@ -58,7 +63,7 @@ void output_prompt(char *order)
 {
         printf("\12Array elements sorting in %s order:\12", order);
 
-        if (strcmp(order, "ascending") == 0)
+        if (strcmp(order, ASC) == 0)
                 for (idx_ext = 0; idx_ext < i_total_elem; idx_ext++)
                         printf("%ld ", l_arr_buf[idx_ext]);
         else {
@@ -73,7 +78,7 @@ void output_prompt(char *order)
 
 void insertion_sort(void)
 {
-        for (idx_ext = 1; idx_ext < i_total_elem; idx_ext += 1) {
+        for (idx_ext = 1; idx_ext < i_total_elem; idx_ext++) {
                 idx_inn = idx_ext - 1;          /* previous element*/
                 i_temp = l_arr_buf[idx_ext];    /* current element*/
                 for ( ; i_temp < l_arr_buf[idx_inn] && idx_inn >= 0;
@@ -81,6 +86,42 @@ void insertion_sort(void)
                         l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
                 }
                 l_arr_buf[idx_inn + 1] = i_temp;
+        }
+}
+
+int bin_search(void)
+{
+        int low, high, mid;
+        low = 0;
+        high = idx_ext - 1;
+        while (low <= high) {
+                mid = (low + high) / 2;
+                if (i_temp < l_arr_buf[mid])
+                        high = mid - 1;
+                else if (i_temp > l_arr_buf[mid])
+                        low  = mid + 1;
+                else
+                        return mid;
+        }
+        return low;
+}
+
+void bin_ins_sort(void)
+{
+        for (idx_ext = 1; idx_ext < i_total_elem; idx_ext++) {
+                /* Store elements that routines will insert later */
+                i_temp = l_arr_buf[idx_ext];
+                /* Using binary search algorithm find the position where
+                 * routines ready insert.
+                 * Note: binary-search must working on increasing order
+                 * sequence(array) */
+                int ins_pos = bin_search();
+                for (idx_inn = idx_ext; l_arr_buf[idx_inn - 1] > i_temp
+                     && idx_inn > ins_pos; idx_inn--) {
+                        /* swap adjacent target elements */
+                        l_arr_buf[idx_inn] = l_arr_buf[idx_inn - 1];
+                }
+                l_arr_buf[ins_pos] = i_temp;
         }
 }
 
@@ -108,8 +149,8 @@ void interactive_select_scheme(void)
         char s_feature_info[] =
                 "\12what sorting scheme you want to use?\
                  \12A)\11-->\11insertion sort algorithm.\
-                 \12"
-                ;
+                 \12B)\11-->\11binary insertion sort algorithm.\
+                 \12";
         printf("%s", s_feature_info);
         scanf("%s", s_user_input);
 
@@ -120,26 +161,50 @@ void interactive_select_scheme(void)
                 case 'a':
                 case 'A':
                         select_mode = interactive_select_mode();
-                        while (48 <= select_mode <= 50) {
+                        /* 0-1 implying ASCII DEC 48-49, respectively */
+                        while (48 <= select_mode <= 49) {
                                 if (select_mode == '0') {
                                         execute_sort(insertion_sort
-                                                     , "ascending");
+                                                     , ASC);
                                         break;
                                 } else if (select_mode  == '1') {
                                         execute_sort(insertion_sort
-                                                     , "descending");
+                                                     , DES);
                                         break;
                                 } else {
-                                        printf("ERROR: illegal option"
-                                               ", please retry.. :p\12");
-                                        select_mode =
-                                                interactive_select_mode();
+                                        printf("ERROR: illegal option,"
+                                               " please retry.. :p\12");
+                                        select_mode
+                                         = interactive_select_mode();
                                         continue;
                                 }
                         }
                         break;
+                case 'b':
+                case 'B':
+                        select_mode = interactive_select_mode();
+                        while ( 48<= select_mode < 50) {
+                                if (select_mode == '0') {
+                                        execute_sort(bin_ins_sort
+                                                     , ASC);
+                                        break;
+                                } else if (select_mode  == '1') {
+                                        execute_sort(bin_ins_sort
+                                                     , DES);
+                                        break;
+                                } else {
+                                        printf("ERROR: illegal option,"
+                                               " please retry.. :p\12");
+                                        select_mode
+                                          = interactive_select_mode();
+                                        continue;
+                                }
+                        }
+                        break;
+
                 default:
-                        printf("ERROR: illegal option, please retry.. :D");
+                        printf("ERROR: Encounter illegal options value,"
+                               " please retry.. :D");
                         interactive_select_scheme();
                         break;
         }
