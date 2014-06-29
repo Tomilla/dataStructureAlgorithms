@@ -32,7 +32,7 @@ void input_prompt(char *order)
         scanf("%d", &i_total_elem);
 
         printf("\12Please enter %d element%s Or press 'q/Q' key"
-               "to leave Command-Line-Interface.. :)\12"
+               "\40to leave Command-Line-Interface.. :)\12"
                , i_total_elem, (i_total_elem > 1) ? "s" : "");
 
         idx_ext = 0;
@@ -45,9 +45,11 @@ void input_prompt(char *order)
                        : "th");
                 scanf("%s", s_user_input);
 
-                if (strcmp(s_user_input, "q") == 0
-                    || strcmp(s_user_input, "Q") == 0) {
-                        i_total_elem--;
+                if (strcmp(s_user_input, "q") == 0 ||
+                    strcmp(s_user_input, "Q") == 0) {
+                        /* resetting total elements *
+                         * to actual lower bound. ^_*/
+                        i_total_elem = idx_ext;
                         break;
                 }
 
@@ -76,12 +78,29 @@ void output_prompt(char *order)
         getchar();
 }
 
+
+void bubble_sort(void)
+{
+        for (idx_ext = i_total_elem - 2; idx_ext >= 0; idx_ext--) {
+                for (idx_inn = 0; idx_inn <= idx_ext; idx_inn++) {
+                        if (l_arr_buf[idx_inn] >
+                            l_arr_buf[idx_inn + 1]) {
+                                i_temp = l_arr_buf[idx_inn];
+                                l_arr_buf[idx_inn] =
+                                  l_arr_buf[idx_inn + 1];
+                                l_arr_buf[idx_inn + 1] = i_temp;
+                        }
+                }
+        }
+}
+
+
 void insertion_sort(void)
 {
         for (idx_ext = 1; idx_ext < i_total_elem; idx_ext++) {
                 idx_inn = idx_ext - 1;          /* previous element*/
                 i_temp = l_arr_buf[idx_ext];    /* current element*/
-                for ( ; i_temp < l_arr_buf[idx_inn] && idx_inn >= 0;
+                for (; i_temp < l_arr_buf[idx_inn] && idx_inn >= 0;
                      idx_inn--) {
                         l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
                 }
@@ -101,7 +120,7 @@ int bin_search(void)
                 else if (i_temp > l_arr_buf[mid])
                         low  = mid + 1;
                 else
-                        return mid;
+                        return mid + 1;
         }
         return low;
 }
@@ -115,11 +134,13 @@ void bin_ins_sort(void)
                  * routines ready insert.
                  * Note: binary-search must working on increasing order
                  * sequences(array) */
-                int ins_pos = bin_search();
-                for (idx_inn = idx_ext; l_arr_buf[idx_inn - 1] > i_temp
-                     && idx_inn > ins_pos; idx_inn--) {
+                int
+                ins_pos = bin_search();
+                idx_inn = idx_ext -  1;
+                for (; l_arr_buf[idx_inn] > i_temp &&
+                     (idx_inn + 1) > ins_pos; idx_inn--) {
                         /* swap adjacent target elements */
-                        l_arr_buf[idx_inn] = l_arr_buf[idx_inn - 1];
+                        l_arr_buf[idx_inn + 1] = l_arr_buf[idx_inn];
                 }
                 l_arr_buf[ins_pos] = i_temp;
         }
@@ -148,10 +169,11 @@ void shell_sort(void)
                 for (idx_ext = gap; idx_ext < i_total_elem; idx_ext++) {
                         i_temp = l_arr_buf[idx_ext];
                         idx_inn = idx_ext - gap;
-                        for (; l_arr_buf[idx_inn] > i_temp
-                             && idx_inn >= 0; idx_inn -= gap) {
-                                l_arr_buf[idx_inn + gap]
-                                  = l_arr_buf[idx_inn];
+                        for (; l_arr_buf[idx_inn] > i_temp &&
+                             idx_inn >= 0; idx_inn -= gap) {
+
+                                l_arr_buf[idx_inn + gap] =
+                                  l_arr_buf[idx_inn];
                         }
                         l_arr_buf[idx_inn + gap] = i_temp;
                 }
@@ -181,10 +203,11 @@ char interactive_select_mode(void)
 void interactive_select_scheme(void)
 {
         char s_feature_info[] =
-                "\12what sorting scheme you want to use?\
-                 \12A)\11-->\11Direct insertion sort algorithm.\
-                 \12B)\11-->\11Binary search insertion sort algorithm.\
-                 \12C)\11-->\11Donald shell  insertion sort algorithm.\
+                "\12What sorting scheme you want to use?\
+                 \12A)\11-->\11Bubble bubble sort algorithm.\
+                 \12B)\11-->\11Direct insertion sort algorithm.\
+                 \12C)\11-->\11Binary search insertion sort algorithm.\
+                 \12D)\11-->\11Donald shell  insertion sort algorithm.\
                  \12";
         printf("%s", s_feature_info);
         scanf("%s", s_user_input);
@@ -193,8 +216,30 @@ void interactive_select_scheme(void)
         char select_mode, select_scheme = s_user_input[0];
 
         switch (select_scheme) {
+
                 case 'a':
                 case 'A':
+                        select_mode = interactive_select_mode();
+                        while (47 < select_mode <= 49) {
+                                if (select_mode == '0') {
+                                        execute_sort(bubble_sort
+                                                     , ASC);
+                                        break;
+                                } else if (select_mode  == '1') {
+                                        execute_sort(bubble_sort
+                                                     , DES);
+                                        break;
+                                } else {
+                                        printf("ERROR: illegal option,"
+                                               " please retry.. :p\12");
+                                        select_mode
+                                            = interactive_select_mode();
+                                        continue;
+                                }
+                        }
+                        break;
+                case 'b':
+                case 'B':
                         select_mode = interactive_select_mode();
                         /* 0-1 implying ASCII DEC 48-49, respectively */
                         while (48 <= select_mode <= 49) {
@@ -210,28 +255,7 @@ void interactive_select_scheme(void)
                                         printf("ERROR: illegal option,"
                                                " please retry.. :p\12");
                                         select_mode
-                                         = interactive_select_mode();
-                                        continue;
-                                }
-                        }
-                        break;
-                case 'b':
-                case 'B':
-                        select_mode = interactive_select_mode();
-                        while ( 48<= select_mode < 50) {
-                                if (select_mode == '0') {
-                                        execute_sort(bin_ins_sort
-                                                     , ASC);
-                                        break;
-                                } else if (select_mode  == '1') {
-                                        execute_sort(bin_ins_sort
-                                                     , DES);
-                                        break;
-                                } else {
-                                        printf("ERROR: illegal option,"
-                                               " please retry.. :p\12");
-                                        select_mode
-                                          = interactive_select_mode();
+                                            = interactive_select_mode();
                                         continue;
                                 }
                         }
@@ -241,6 +265,27 @@ void interactive_select_scheme(void)
                         select_mode = interactive_select_mode();
                         while ( 48<= select_mode < 50) {
                                 if (select_mode == '0') {
+                                        execute_sort(bin_ins_sort
+                                                     , ASC);
+                                        break;
+                                } else if (select_mode  == '1') {
+                                        execute_sort(bin_ins_sort
+                                                     , DES);
+                                        break;
+                                } else {
+                                        printf("ERROR: illegal option,"
+                                               " please retry.. :p\12");
+                                        select_mode
+                                            = interactive_select_mode();
+                                        continue;
+                                }
+                        }
+                        break;
+                case 'd':
+                case 'D':
+                        select_mode = interactive_select_mode();
+                        while ( 47 < select_mode < 50) {
+                                if (select_mode == '0') {
                                         execute_sort(shell_sort
                                                      , ASC);
                                         break;
@@ -252,7 +297,7 @@ void interactive_select_scheme(void)
                                         printf("ERROR: illegal option,"
                                                " please retry.. :p\12");
                                         select_mode
-                                          = interactive_select_mode();
+                                            = interactive_select_mode();
                                         continue;
                                 }
                         }
@@ -260,7 +305,7 @@ void interactive_select_scheme(void)
 
                 default:
                         printf("ERROR: Encounter illegal options value,"
-                               " please retry.. :D");
+                               " please retry.. :D\12");
                         interactive_select_scheme();
                         break;
         }
@@ -271,7 +316,6 @@ int main(int argc, char **argv)
 {
         interactive_select_scheme();
 
-        putchar('\12');
         getchar();
         return 0;
 }
