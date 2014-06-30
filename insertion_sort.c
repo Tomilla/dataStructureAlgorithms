@@ -29,8 +29,8 @@ static char s_user_input[MAXITEM];
 /* buffer array for disorder elements */
 static long l_arr_buf[MAXITEM];
 
-void to_lower_case(char *s_ptr);
-void to_upper_case(char *s_ptr);
+void to_lower_case(char *);
+void to_upper_case(char *);
 void input_prompt(char *);
 void output_prompt(char *);
 void bubble_sort(void);
@@ -56,15 +56,27 @@ int main(int argc, char **argv)
 
 void to_lower_case(char *s_ptr)
 {
+        char *p = s_ptr;
         /* loop through the string and convert *
-         * each character to lowercase. easy! */
-        for (idx_ext = 0; s_ptr[idx_ext]; idx_ext++)
-                s_ptr[idx_ext] = tolower(s_ptr[idx_ext]);
+         * each character to lowercase.        */
+        //for (idx_ext = 0; p[idx_ext]; idx_ext++)
+        //        p[idx_ext] = tolower(p[idx_ext]);
+
+        /* to convert to lower case is equivalent to    *
+         * rise bit 0x40 or add 0x20. [ASCII knowledge] */
+
+        for (; *p; ++p)
+                /* if current character in the range *
+                 *   0x40 < {A-Z} < 0x5B             *
+                 *   then convert it to lower case.  */
+                *p = *p >='A' && *p <='Z'  ? *p + 0x20 : *p;
 }
 
 void to_upper_case(char *s_ptr)
 {
-        for (; *s_ptr; ++s_ptr) *s_ptr = toupper(*s_ptr);
+        char *p = s_ptr;
+        /* one liners version, design by J.F. Sebastian */
+        for (; *p; ++p) *p = toupper(*p);
 }
 
 void input_prompt(char *order)
@@ -113,7 +125,7 @@ void output_prompt(char *order)
                         printf("%ld ", l_arr_buf[idx_ext]);
         else {
                 idx_ext = i_total_elem - 1;
-                for ( ; idx_ext >= 0; idx_ext--)
+                for (; idx_ext >= 0; idx_ext--)
                         printf("%ld ", l_arr_buf[idx_ext]);
         }
 
