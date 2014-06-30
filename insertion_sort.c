@@ -4,11 +4,15 @@
 	> E-Mail: Gero.rim@gmail.com
 	> Created Time: Sat 28 Jun 2014 06:36:25 PM HKT
  **********************************************************************/
-
 /*!
  * Source code of simple insertion sort implementation using array in
  * ascending or descending order in C programming language.
  */
+
+/* remove the M$ pre-compiler secure warnings */
+#ifdef _MSC_VER         /* M$ Visual Studio */
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include <stdio.h>
 #include <ctype.h>
