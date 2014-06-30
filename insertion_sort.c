@@ -19,8 +19,16 @@
 #define ASC "ascending"
 #define DES "descending"
 
-/* pointer to function retuct void */
+/* pointer to function return void */
 typedef void (*func_ptr_void)();
+
+typedef int ELEM ;
+#define KEY(A) (A)
+#define LESS(A, B) (KEY(A) < KEY(B))
+#define EXCH(A, B) { ELEM t = A; A = B; B = t; }
+#define CMP_EXCH(A, B) if (LESS(B, A)) EXCH(A, B)
+/* since x ^ x = 1, except that x equal 0x0 */
+//#define EXCH(A, B) { A ^= B; B ^= A;  A ^= B; }
 
 /* index of internal part loop, index of external part loop */
 static int idx_inn, idx_ext, i_temp, i_total_elem;
@@ -35,7 +43,7 @@ void input_prompt(char *);
 void output_prompt(char *);
 void bubble_sort(void);
 void selection_sort(void);
-void insertion_sort(void);
+void dir_ins_sort(void);
 int  bin_search(void);
 void bin_ins_sort(void);
 void shell_sort(void);
@@ -135,33 +143,39 @@ void output_prompt(char *order)
 void bubble_sort(void)
 {
         for (idx_ext = i_total_elem - 2; idx_ext >= 0; idx_ext--) {
-                for (idx_inn = 0; idx_inn <= idx_ext; idx_inn++) {
-                        if (l_arr_buf[idx_inn] >
-                            l_arr_buf[idx_inn + 1]) {
-                                i_temp = l_arr_buf[idx_inn];
-                                l_arr_buf[idx_inn] =
-                                  l_arr_buf[idx_inn + 1];
-                                l_arr_buf[idx_inn + 1] = i_temp;
-                        }
-                }
+                for (idx_inn = 0; idx_inn <= idx_ext; idx_inn++)
+                        CMP_EXCH(l_arr_buf[idx_inn],
+                                 l_arr_buf[idx_inn + 1]);
         }
 }
 
 void selection_sort(void)
 {
-        for (idx_ext = 0; idx_ext < i_total_elem - 1; idx_ext++) {
+        /**
+         * Advance the position through the entire array
+         * Why could i do idx_ext < i_total - 1, because
+         *   single element is also mininum element.
+         * Find the min element in the unsorted array
+         *   l_arr_buf[idx_ext ... i_total_elem - 1].
+         */
+        for (idx_ext = 0; idx_ext < i_total_elem; idx_ext++) {
+                /* assume the min is the first element */
+                int i_min = idx_ext;
+                /* test against after idx_ext to find the smallest */
                 idx_inn = idx_ext + 1;
                 for (; idx_inn < i_total_elem; idx_inn++) {
-                        if (l_arr_buf[idx_ext] > l_arr_buf[idx_inn]) {
-                                i_temp = l_arr_buf[idx_ext];
-                                l_arr_buf[idx_ext] = l_arr_buf[idx_inn];
-                                l_arr_buf[idx_inn] = i_temp;
-                        }
+                        /* if result is less, it is the new minimum */
+                        /* found new minimum; remember its index */
+                        if (l_arr_buf[idx_inn] < l_arr_buf[i_min])
+                                i_min = idx_inn;
                 }
+
+                if (i_min != idx_inn)
+                        EXCH(l_arr_buf[idx_ext], l_arr_buf[i_min]);
         }
 }
 
-void insertion_sort(void)
+void dir_ins_sort(void)
 {
         for (idx_ext = 1; idx_ext < i_total_elem; idx_ext++) {
                 idx_inn = idx_ext - 1;          /* previous element*/
@@ -294,10 +308,10 @@ void interactive_select_scheme(void)
         char s_feature_info[] =
                 "\12What sorting scheme you want to use?\
                  \12A)\11-->\11Bubble sort algorithm.\
-                 \12B)\11-->\11Selection sort algorithm\
+                 \12B)\11-->\11Selection sort algorithm.\
                  \12C)\11-->\11Direct insertion sort algorithm.\
-                 \12D)\11-->\11Binary search insertion sort algorithm.\
-                 \12E)\11-->\11Donald shell  insertion sort algorithm.\
+                 \12D)\11-->\11Donald shell insertion sort algorithm.\
+                 \12E)\11-->\11Binary search insertion sort algorithm.\
                  \12";
         printf("%s", s_feature_info);
         scanf("%s", s_user_input);
@@ -316,15 +330,15 @@ void interactive_select_scheme(void)
                         break;
                 case 'c':
                 case 'C':
-                        inject_func(insertion_sort);
+                        inject_func(dir_ins_sort);
                         break;
                 case 'd':
                 case 'D':
-                        inject_func(bin_ins_sort);
+                        inject_func(shell_sort);
                         break;
                 case 'e':
                 case 'E':
-                        inject_func(shell_sort);
+                        inject_func(bin_ins_sort);
                         break;
                 default:
                         printf("ERROR: Encounter illegal options value,"
