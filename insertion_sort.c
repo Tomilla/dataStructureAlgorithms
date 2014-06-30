@@ -19,6 +19,9 @@
 #define ASC "ascending"
 #define DES "descending"
 
+/* pointer to function retuct void */
+typedef void (*func_ptr_void)();
+
 /* index of internal part loop, index of external part loop */
 static int idx_inn, idx_ext, i_temp, i_total_elem;
 /* string array use for store user input data */
@@ -31,13 +34,14 @@ void to_upper_case(char *s_ptr);
 void input_prompt(char *);
 void output_prompt(char *);
 void bubble_sort(void);
+void selection_sort(void);
 void insertion_sort(void);
 int  bin_search(void);
 void bin_ins_sort(void);
 void shell_sort(void);
 char interactive_select_mode(void);
-void inject_func(void (*)());
-void execute_sort(void (*)(), char *);
+void inject_func(func_ptr_void);
+void execute_sort(func_ptr_void, char *);
 void interactive_select_scheme(void);
 void interactive_inquiry_again(void);
 
@@ -52,12 +56,15 @@ int main(int argc, char **argv)
 
 void to_lower_case(char *s_ptr)
 {
-        for (; *s_ptr != '\0'; ++s_ptr) *s_ptr = tolower(*s_ptr);
+        /* loop through the string and convert *
+         * each character to lowercase. easy! */
+        for (idx_ext = 0; s_ptr[idx_ext]; idx_ext++)
+                s_ptr[idx_ext] = tolower(s_ptr[idx_ext]);
 }
 
 void to_upper_case(char *s_ptr)
 {
-        for (; *s_ptr != '\0'; ++s_ptr) *s_ptr = toupper(*s_ptr);
+        for (; *s_ptr; ++s_ptr) *s_ptr = toupper(*s_ptr);
 }
 
 void input_prompt(char *order)
@@ -97,7 +104,6 @@ void input_prompt(char *order)
 }
 
 
-
 void output_prompt(char *order)
 {
         printf("\12Array elements sorting in %s order:\12", order);
@@ -129,6 +135,19 @@ void bubble_sort(void)
         }
 }
 
+void selection_sort(void)
+{
+        for (idx_ext = 0; idx_ext < i_total_elem - 1; idx_ext++) {
+                idx_inn = idx_ext + 1;
+                for (; idx_inn < i_total_elem; idx_inn++) {
+                        if (l_arr_buf[idx_ext] > l_arr_buf[idx_inn]) {
+                                i_temp = l_arr_buf[idx_ext];
+                                l_arr_buf[idx_ext] = l_arr_buf[idx_inn];
+                                l_arr_buf[idx_inn] = i_temp;
+                        }
+                }
+        }
+}
 
 void insertion_sort(void)
 {
@@ -262,10 +281,11 @@ void interactive_select_scheme(void)
 {
         char s_feature_info[] =
                 "\12What sorting scheme you want to use?\
-                 \12A)\11-->\11Bubble bubble sort algorithm.\
-                 \12B)\11-->\11Direct insertion sort algorithm.\
-                 \12C)\11-->\11Binary search insertion sort algorithm.\
-                 \12D)\11-->\11Donald shell  insertion sort algorithm.\
+                 \12A)\11-->\11Bubble sort algorithm.\
+                 \12B)\11-->\11Selection sort algorithm\
+                 \12C)\11-->\11Direct insertion sort algorithm.\
+                 \12D)\11-->\11Binary search insertion sort algorithm.\
+                 \12E)\11-->\11Donald shell  insertion sort algorithm.\
                  \12";
         printf("%s", s_feature_info);
         scanf("%s", s_user_input);
@@ -280,14 +300,18 @@ void interactive_select_scheme(void)
                         break;
                 case 'b':
                 case 'B':
-                        inject_func(insertion_sort);
+                        inject_func(selection_sort);
                         break;
                 case 'c':
                 case 'C':
-                        inject_func(bin_ins_sort);
+                        inject_func(insertion_sort);
                         break;
                 case 'd':
                 case 'D':
+                        inject_func(bin_ins_sort);
+                        break;
+                case 'e':
+                case 'E':
                         inject_func(shell_sort);
                         break;
                 default:
@@ -311,10 +335,10 @@ void interactive_inquiry_again(void)
         scanf("%s", s_user_input);
 
         /* Remove Case Sensitive */
-        to_upper_case(s_user_input);
-        //to_lower_case(s_user_input);
+        //to_upper_case(s_user_input);
+        to_lower_case(s_user_input);
         select_answer = s_user_input;
 
-        if (!(strcmp(select_answer, "YES")))
+        if (!(strcmp(select_answer, "yes")))
                 interactive_select_scheme();
 }
